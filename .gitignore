@@ -1,0 +1,5 @@
+/iso
+asm.o
+kernel
+kernel.elf
+kernel.o
