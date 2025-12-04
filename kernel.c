@@ -16,21 +16,39 @@
 #define LIGHT_YELLOW_TXT 0x0E
 #define LIGHT_WHITE_TXT 0x0F
 
-
+#define BLACK_BG_WHITE_TXT 0X0F
+#define WHITE_BG_BLACK_TXT 0XF0
 #define BLUE_BG_WHITE_TXT 0x1F
+// qemu-system-i386 -cdrom iso/os.iso
 
+void design();
 void k_clear_screen();
 unsigned int k_printf(char *message, unsigned int line, unsigned char color);
 
-/* simple kernel written in C */
 void k_main() 
 {
 	k_clear_screen();
-	k_printf("Hello, world! Welcome to my kernel.", 0, BLUE_BG_WHITE_TXT);
-    k_printf("This is NOT a VIRUS, trust me!", 1, LIGHT_CYAN_TXT);
+    design();
+	k_printf("Hello, world! Welcome to my kernel.", 1, WHITE_BG_BLACK_TXT);
+    k_printf("This is NOT a VIRUS, trust me!", 2, LIGHT_CYAN_TXT);
 };
 
-/* k_clear_screen : to clear the entire text screen */
+void design()
+{
+    int i = 0;
+
+    char test[11] = "";
+
+    while(i < 10){
+        test[i] = '-';
+        i++;
+    }
+    test[10] = '\0';
+
+    k_printf(test, 0, LIGHT_WHITE_TXT);
+};
+
+
 void k_clear_screen()
 {
 	char *vidmem = (char *) 0xb8000;
