@@ -21,37 +21,29 @@
 #define BLUE_BG_WHITE_TXT 0x1F
 // qemu-system-i386 -cdrom iso/os.iso
 
-void design();
+int cursor_x = 0;
+int cursor_y = 0;
+
+#define VIDEO_MEMORY ((char *) 0xb8000)
+
+
 void k_clear_screen();
-unsigned int k_printf(char *message, unsigned int line, unsigned char color);
+void k_printf(char* str, unsigned char color);
+void print_char(char c, unsigned char color);
 
 void k_main() 
 {
 	k_clear_screen();
-    design();
-	k_printf("Hello, world! Welcome to my kernel.", 1, WHITE_BG_BLACK_TXT);
-    k_printf("This is NOT a VIRUS, trust me!", 2, LIGHT_CYAN_TXT);
+
+	k_printf("Hello, world! Welcome to my kernel.\n",WHITE_BG_BLACK_TXT);
+    k_printf("This is NOT a VIRUS, trust me!", LIGHT_CYAN_TXT);
 };
 
-void design()
-{
-    int i = 0;
-
-    char test[11] = "";
-
-    while(i < 10){
-        test[i] = '-';
-        i++;
-    }
-    test[10] = '\0';
-
-    k_printf(test, 0, LIGHT_WHITE_TXT);
-};
 
 
 void k_clear_screen()
 {
-	char *vidmem = (char *) 0xb8000;
+	char *vidmem = VIDEO_MEMORY;
 	unsigned int i=0;
 	while(i < (80*25*2))
 	{
@@ -63,28 +55,35 @@ void k_clear_screen()
 };
 
 /* k_printf : the message and the line # */
-unsigned int k_printf(char *message, unsigned int line, unsigned char color)
+void k_printf(char* str, unsigned char color)
 {
-	char *vidmem = (char *) 0xb8000;
-	unsigned int i=0;
+    int i = 0;
+    while (str[i] != '\0') {
+        print_char(str[i], color);
+        i++;
+    }
+};
 
-	i=(line*80*2);
 
-	while(*message!=0)
-	{
-		if(*message=='\n')
-		{
-			line++;
-			i=(line*80*2);
-			*message++;
-		} else {
-			vidmem[i]=*message;
-			*message++;
-			i++;
-			vidmem[i]=color;
-			i++;
-		};
-	};
 
-	return(1);
-}
+void print_char(char c, unsigned char color)
+{
+
+    if(c == '\n'){
+        cursor_x = 0;
+        cursor_y++;
+        return;
+    }
+
+    int offset = (cursor_y * 80 + cursor_x) * 2;
+    VIDEO_MEMORY[offset] = c;
+    VIDEO_MEMORY[offset + 1] = color;
+
+    cursor_x++;
+
+    if(cursor_x >= 80){
+        cursor_x = 0;
+        cursor_y++;
+    }
+
+};
