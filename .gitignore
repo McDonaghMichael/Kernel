@@ -3,3 +3,7 @@ asm.o
 kernel
 kernel.elf
 kernel.o
+iso/
+*.elf
+*.o
+*.iso
